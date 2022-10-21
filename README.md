@@ -1,1 +1,1 @@
-Visualizing the J Dilla time concepts
+Visualizing J Dilla time concepts, inspired by the diagrams in Dan Charna's book "Dilla Time"
