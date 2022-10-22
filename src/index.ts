@@ -1,6 +1,7 @@
-import Playback from './Playback';
+import playback from './Playback';
 import Grid from './Grid';
 import {straightGrid, swingGrid} from './Score';
+import drumSampler from './DrumSampler';
 
 const container = document.getElementById('root');
 if (!container) {
@@ -9,10 +10,8 @@ if (!container) {
 
 
 const gridView = new Grid(container, straightGrid);
-setTimeout(() => {
-    const playback = new Playback();
-    document.body.onclick = () => playback.start();
-}, 1500);
+drumSampler.load().then(() => console.log('Sampler loaded'));
+document.body.onclick = () => playback.start();
 
 let isStraight = true;
 setInterval(() => {

@@ -1,45 +1,74 @@
 import * as Tone from 'tone';
 import { INSTRUMENT } from './constants';
-import DrumSampler from './DrumSampler';
+import drumSampler from './DrumSampler';
 
-const LOOP_DURATION = '2:0:0';
+const LOOP_DURATION = '4:0:0';
+// Seems like Dilla was draw to tempos around 100bpm most of the time
+const DEFAULT_BPM = 100;
 
-export default class Playback {
-    declare private drumSampler: DrumSampler;
+class Playback {
     declare private schedules: Map<INSTRUMENT, Map<number, number>>;
 
     constructor() {
-        this.drumSampler = new DrumSampler();
         this.schedules = new Map();
+        this.setTempo(DEFAULT_BPM);
     }
 
-    scheduleNote(instrument: INSTRUMENT, beatIndex: number, tick: number): void  {
-        if (!this.schedules.get(instrument)?.get(beatIndex)) {
+    scheduleNote(instrument: INSTRUMENT, beatIndex: number, tick: number): void {
+        if (this.schedules.get(instrument)?.get(beatIndex) === undefined) {
             const beatMap = new Map();
-            beatMap.set(beatIndex, -1);
+            beatMap.set(beatIndex, undefined);
             this.schedules.set(instrument, beatMap);
         }
         const existingScheduleId = this.schedules.get(instrument)?.get(beatIndex);
-        if (existingScheduleId && existingScheduleId !== -1) {
+        if (existingScheduleId !== undefined) {
             Tone.Transport.cancel(existingScheduleId);
-            return;
         }
-        // 256 ticks in a beat (1024 per measure)
-        const tickTime = Tone.Time({'256n': tick}).valueOf();
-        const newScheduleId = Tone.Transport.scheduleRepeat(() => {
-            this.drumSampler.trigger(instrument);
+        const tickTime = Tone.Time({ '256n': tick }).valueOf();
+        const newScheduleId = Tone.Transport.scheduleRepeat(time => {
+            drumSampler.trigger(instrument, time);
         }, LOOP_DURATION, tickTime);
 
         this.schedules.get(instrument)?.set(beatIndex, newScheduleId);
     }
 
+    clearBeat(instrument: INSTRUMENT, beatIndex: number): void {
+        const scheduleId = this.schedules.get(instrument)?.get(beatIndex);
+        if (scheduleId !== undefined) {
+            Tone.Transport.cancel(scheduleId);
+            this.schedules.get(instrument)?.delete(beatIndex);
+        }
+    }
+
     clearSchedule(): void {
-        // TODO: implement clearing all scheduled notes
+        this.schedules.forEach(beatMap => {
+            beatMap.forEach(scheduleId => {
+                Tone.Transport.cancel(scheduleId);
+            });
+        });
+        this.schedules = new Map();
     }
 
     start(): void {
         Tone.start();
         Tone.Transport.start();
-        this.scheduleNote(INSTRUMENT.KICK, 1, 1030);
+    }
+
+    stop(): void {
+        Tone.Transport.stop();
+    }
+
+    setTempo(bpm: number): void {
+        /**
+         * We use higher internal tempo to get more temporal resolution.
+         * Currently, the smallest subdivision in tonejs is a 256th note.
+         * This allows us to get down to a 1024th note.
+         *
+         * Probably overkill as Dilla himself was constrained by the MPC 3000
+         * which I doubt even supported down to a 256th note.
+         */
+        Tone.Transport.bpm.value = bpm * 4;
     }
 }
+
+export default new Playback();

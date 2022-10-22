@@ -1,4 +1,13 @@
+import { INSTRUMENT } from './constants';
 import GridRow from './GridRow';
+import playback from './Playback';
+
+const INSTRUMENT_BY_ROW = [
+    INSTRUMENT.HIHAT,
+    INSTRUMENT.CLAP,
+    INSTRUMENT.SNARE,
+    INSTRUMENT.KICK,
+];
 
 export default class Grid {
     declare element: HTMLDivElement;
@@ -45,15 +54,23 @@ export default class Grid {
         target.classList.add('active');
     }
 
-    private toggleCellState(cellElement: HTMLElement) {
+    private getRowCol(cellElement: HTMLDivElement): [number, number] {
+        const{cellId} = cellElement.dataset;
+        return cellId?.split(':').map(s => Number(s)) as [number, number];
+    }
+
+    private toggleCellState(cellElement: HTMLDivElement) {
+        const [row, col] = this.getRowCol(cellElement);
         if (cellElement.classList.contains('active')) {
             cellElement.classList.remove('active');
+            playback.clearBeat(INSTRUMENT_BY_ROW[row], col);
         } else {
             cellElement.classList.add('active');
+            playback.scheduleNote(INSTRUMENT_BY_ROW[row], col, col * 128);
         }
     }
 
-    setGrid(grid: number[][]) {
+    setGrid(grid: number[][]): void {
         this.rows.forEach((row, i) => {
             row.setWidths(grid[i]);
         });
