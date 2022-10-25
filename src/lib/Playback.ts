@@ -19,27 +19,35 @@ class Playback {
 
     scheduleBeat(beat: Beat) {
         const { bpm, instruments } = beat;
-        // cancel previously scheduled notes
-        this.activeScheduleIds.forEach(sId => {
-            Tone.Transport.cancel(sId)
-        });
-        this.activeScheduleIds.clear();
 
+        this.clearSchedule();
         this.setTempo(bpm);
+
         instruments.forEach((instrument, i) => {
             let currentTick = 0;
+
             instrument.notes.forEach(note => {
-                const tickTime = Tone.Time({ '256n': currentTick }).valueOf();
-                const scheduleId = Tone.Transport.scheduleRepeat(time => {
-                    drumSampler.trigger(instrument.name, time);
-                }, LOOP_DURATION, tickTime);
-                this.activeScheduleIds.add(scheduleId);
+                if (note.active) {
+                    const tickTime = Tone.Time({ '256n': currentTick }).valueOf();
+                    const scheduleId = Tone.Transport.scheduleRepeat(time => {
+                        drumSampler.trigger(instrument.name, time);
+                    }, LOOP_DURATION, tickTime);
+
+                    this.activeScheduleIds.add(scheduleId);
+                }
 
                 currentTick += note.duration;
             });
 
             currentTick = 0;
         });
+    }
+
+    clearSchedule() {
+        this.activeScheduleIds.forEach(sId => {
+            Tone.Transport.clear(sId)
+        });
+        this.activeScheduleIds.clear();
     }
 
     start(): void {
@@ -52,7 +60,7 @@ class Playback {
     }
 
     setTempo(bpm: number): void {
-        Tone.Transport.bpm.value = bpm;
+        Tone.Transport.bpm.value = bpm * 4;
     }
 }
 
