@@ -1,5 +1,5 @@
 import { Sampler } from 'tone';
-import { INSTRUMENT } from './constants';
+import { INSTRUMENT } from '../types/beatTypes';
 
 const INSTRUMENT_NOTE_MAP: Record<INSTRUMENT, string> = {
     // these notes are arbitrary
@@ -9,10 +9,10 @@ const INSTRUMENT_NOTE_MAP: Record<INSTRUMENT, string> = {
     [INSTRUMENT.CLAP]: 'F1',
 }
 const FILE_TYPE = 'mp3';
-const SAMPLES_ENDPOINT = `${location.href.replace(/\/+$/, '')}/samples/`;
+const SAMPLES_ENDPOINT = `${window.location.href.replace(/\/+$/, '')}/samples/`;
 
 class DrumSampler {
-    declare private sampler: Sampler;
+    private sampler?: Sampler;
 
     async load(): Promise<void> {
         if (this.sampler && this.sampler.loaded) {
@@ -28,7 +28,10 @@ class DrumSampler {
                     [INSTRUMENT_NOTE_MAP.CLAP]: getFileName('clap'),
                 },
                 baseUrl: SAMPLES_ENDPOINT,
-                onload: resolve,
+                onload: () => {
+                    console.log('Sampler loaded successfully');
+                    resolve()
+                },
             }).toDestination();
         });
     }
