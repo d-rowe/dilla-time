@@ -5,7 +5,6 @@ import { setStraight, setSwing, setDilla } from '../slices/beatSlice';
 
 export default function Playbar() {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [isSwing, setIsSwing] = useState(false);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
