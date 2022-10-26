@@ -3,16 +3,16 @@ import { createInitialBeat } from '../lib/beatUtils';
 
 import type { RootState } from '../app/store';
 
-const quarter = 256;
-const eighth = quarter / 2;
-const dillaShort = 110;
-const dillaLong = quarter - dillaShort;
+const q = 256;
+const e = q / 2;
+const ds = 110;
+const dl = q - ds;
 
 const dillaDurations = [
-  new Array(8).fill(eighth),
-  new Array(8).fill(eighth),
-  [dillaShort, eighth, eighth, eighth, eighth, eighth, eighth, dillaLong],
-  [dillaLong, eighth, eighth, eighth, eighth, eighth, eighth, dillaShort],
+  new Array(8).fill(e),
+  [dl, ds, dl, ds, dl, ds, dl, ds],
+  [ds, e, e, e, e, e, e, dl],
+  [dl, e, e, e, e, e, e, ds],
 ];
 
 type SetBpmPayload = {
