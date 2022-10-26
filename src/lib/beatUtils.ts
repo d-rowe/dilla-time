@@ -6,7 +6,7 @@ const DEFAULT_BPM = 100;
 const defaultClapPattern = [0, 0, 0, 0, 0, 0, 0, 0];
 const defaultHihatPattern = [1, 1, 1, 1, 1, 1, 1, 1];
 const defaultSnarePattern = [0, 0, 1, 0, 0, 0, 1, 0];
-const defaultKickPattern = [1, 0, 0, 0, 1, 0, 0, 0];
+const defaultKickPattern = [1, 0, 0, 0, 1, 0, 0, 1];
 
 export function createInitialBeat(): Beat {
     return {

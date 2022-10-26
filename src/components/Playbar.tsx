@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch } from '../app/hooks';
 import Playback from '../lib/Playback';
-import { setStraight, setSwing } from '../slices/beatSlice';
+import { setStraight, setSwing, setDilla } from '../slices/beatSlice';
 
 export default function Playbar() {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -20,12 +20,16 @@ export default function Playbar() {
         setIsPlaying(!isPlaying);
     }
 
-    function onTimeClick() {
-        isSwing
-            ? dispatch(setStraight())
-            : dispatch(setSwing());
+    function onStraightClick() {
+        dispatch(setStraight())
+    }
 
-        setIsSwing(!isSwing);
+    function onSwingClick() {
+        dispatch(setSwing())
+    }
+
+    function onDillaClick() {
+        dispatch(setDilla())
     }
 
     return (
@@ -33,8 +37,14 @@ export default function Playbar() {
             <button onClick={onPlayClick}>
                 {isPlaying ? '⏹' : '▶️'}
             </button>
-            <button onClick={onTimeClick}>
-                {isSwing ? 'swing' : 'straight'}
+            <button onClick={onStraightClick}>
+                straight
+            </button>
+            <button onClick={onSwingClick}>
+                swing
+            </button>
+            <button onClick={onDillaClick}>
+                dilla
             </button>
         </div>
     );

@@ -25,7 +25,7 @@ const InstrumentRow = styled.div`
 const Cell = styled.div`
     border: 1px solid black;
     height: 100%;
-    transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in;
 
     &.active {
         background-color: red;

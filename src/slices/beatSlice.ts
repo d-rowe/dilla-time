@@ -3,6 +3,18 @@ import { createInitialBeat } from '../lib/beatUtils';
 
 import type { RootState } from '../app/store';
 
+const quarter = 256;
+const eighth = quarter / 2;
+const dillaShort = 110;
+const dillaLong = quarter - dillaShort;
+
+const dillaDurations = [
+  new Array(8).fill(eighth),
+  new Array(8).fill(eighth),
+  [dillaShort, eighth, eighth, eighth, eighth, eighth, eighth, dillaLong],
+  [dillaLong, eighth, eighth, eighth, eighth, eighth, eighth, dillaShort],
+];
+
 type SetBpmPayload = {
   bpm: number,
 };
@@ -21,7 +33,7 @@ export const beatSlice = createSlice({
     },
 
     toggleNote: (state, action: PayloadAction<ToggleNotePayload>) => {
-      const {instrumentIndex, beatIndex} = action.payload;
+      const { instrumentIndex, beatIndex } = action.payload;
       const instrument = state.instruments[instrumentIndex];
       const isActive = instrument.notes[beatIndex].active;
       instrument.notes[beatIndex].active = !isActive;
@@ -37,11 +49,19 @@ export const beatSlice = createSlice({
 
     setStraight: state => {
       state.instruments.forEach(instrument => {
-        instrument.notes.forEach((note, i) => {
+        instrument.notes.forEach(note => {
           note.duration = 128;
         });
       });
     },
+
+    setDilla: state => {
+      state.instruments.forEach((instrument, i) => {
+        instrument.notes.forEach((note, j) => {
+          note.duration = dillaDurations[i][j % 8];
+        });
+      });
+    }
   },
 })
 
@@ -50,6 +70,7 @@ export const {
   toggleNote,
   setSwing,
   setStraight,
+  setDilla,
 } = beatSlice.actions;
 
 export const selectBeat = (state: RootState) => state.beat;
