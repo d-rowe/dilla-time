@@ -24,11 +24,13 @@ const InstrumentRow = styled.div`
 
 const Cell = styled.div`
     border: 1px solid black;
+    border-radius: 8px;
     height: 100%;
     transition: all 100ms ease-in;
 
     &.active {
-        background-color: red;
+        background-color: #e76f51;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     }
 `;
 
